@@ -1,0 +1,14 @@
+apiVersion: skaffold/v2beta6
+kind: Config
+metadata:
+  name: demo--go-template
+build:
+  artifacts:
+  - image: app
+    docker:
+      buildArgs:
+        cmd: app
+deploy:
+  kustomize:
+    paths:
+    - deployments/local
