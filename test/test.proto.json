@@ -1,0 +1,8 @@
+{
+  "config": {
+    "/test.Test/Foo": {
+      "permission": "foo",
+      "insecure": true
+    }
+  }
+}

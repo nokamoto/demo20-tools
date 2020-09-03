@@ -1,0 +1,32 @@
+FROM golang:1.15 as protoc-gen-authz
+
+WORKDIR /src
+
+COPY go.mod go.mod
+COPY go.sum go.sum
+
+RUN go mod download
+
+COPY cmd/protoc-gen-authz cmd/protoc-gen-authz
+
+RUN go install ./cmd/protoc-gen-authz
+
+FROM debian:10.5-slim as protoc
+
+RUN apt-get update && apt-get install -y curl unzip
+
+RUN curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protoc-3.13.0-linux-x86_64.zip
+
+RUN unzip protoc-3.13.0-linux-x86_64.zip
+
+FROM debian:10.5-slim
+
+RUN apt-get update && apt-get install -y git
+
+COPY --from=protoc-gen-authz /go/bin/protoc-gen-authz /usr/local/bin/protoc-gen-authz
+
+COPY --from=protoc /include /usr/local/include
+COPY --from=protoc /bin/protoc /usr/local/bin/protoc
+
+RUN chmod +x /usr/local/bin/protoc-gen-authz
+RUN chmod +x /usr/local/bin/protoc

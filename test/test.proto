@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package test;
+
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/empty.proto";
+
+message Authz {
+  string permission = 1;
+  bool insecure = 2;
+}
+
+extend google.protobuf.MethodOptions {
+  Authz authz = 50000;
+}
+
+service Test {
+  rpc Foo(google.protobuf.Empty) returns (google.protobuf.Empty){
+    option (authz) = {
+      insecure: true
+      permission: "foo"
+    };
+  }
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
